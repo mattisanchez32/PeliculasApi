@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using PeliApi;
 using PeliApi.DTOs;
 using PeliApi.Entidades;
+using PeliApi.Helpers;
 using PeliApi.Servicios;
 
 namespace PeliApi.Controllers
@@ -33,9 +34,12 @@ namespace PeliApi.Controllers
 
         // GET: api/Actores
         [HttpGet]
-        public async Task<ActionResult<List<ActorDTO>>> GetActores()
+        public async Task<ActionResult<List<ActorDTO>>> GetActores([FromQuery] PaginacionDTO paginacionDTO)
         {
-            var entidades = await _context.Actores.ToListAsync();
+            var queryable = _context.Actores.AsQueryable();
+            await HttpContext.InsertarParametrosPaginacion(queryable, paginacionDTO.CantidadRegistrosPorPagina);
+            //cambio _context.Acotores por queryable.Paginar para la paginacion
+            var entidades = await queryable.Paginar(paginacionDTO).ToListAsync();
             return mapper.Map<List<ActorDTO>>(entidades);
         }
 

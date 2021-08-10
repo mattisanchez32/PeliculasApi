@@ -12,5 +12,6 @@ namespace PeliApi.Entidades
 		[Required]
 		[StringLength(40)]
 		public string Nombre { get; set; }
+		public List<PeliculasGenero> PeliculasGenero { get; set; }
 	}
 }

@@ -14,12 +14,12 @@ namespace PeliApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GenerosController : ControllerBase
+    public class GenerosController : CustomBaseController
     {
         private readonly AplicationDbContext _context;
 		private readonly IMapper mapper;
 
-		public GenerosController(AplicationDbContext context, IMapper mapper)
+		public GenerosController(AplicationDbContext context, IMapper mapper):base(context, mapper)
         {
             _context = context;
 			this.mapper = mapper;
@@ -29,9 +29,12 @@ namespace PeliApi.Controllers
         [HttpGet]
         public async Task<ActionResult<List<GeneroDTO>>> GetGeneros()
         {
-            var entidades = await _context.Generos.ToListAsync();
-            var dtos = mapper.Map<List<GeneroDTO>>(entidades);
-            return dtos;
+
+            return await Get<Genero, GeneroDTO>();
+
+            //var entidades = await _context.Generos.ToListAsync();
+            //var dtos = mapper.Map<List<GeneroDTO>>(entidades);
+            //return dtos;
         }
 
         // GET: api/Generos/5
@@ -39,16 +42,18 @@ namespace PeliApi.Controllers
         public async Task<ActionResult<GeneroDTO>> GetGenero(int id)
         {
 
-            var genero = await _context.Generos.FindAsync(id);
+            return await Get<Genero, GeneroDTO>(id);
 
-            if (genero == null)
-            {
-                return NotFound();
-            }
+            //var genero = await _context.Generos.FindAsync(id);
 
-            var dto = mapper.Map<GeneroDTO>(genero);
+            //if (genero == null)
+            //{
+            //    return NotFound();
+            //}
 
-            return dto;
+            //var dto = mapper.Map<GeneroDTO>(genero);
+
+            //return dto;
         }
 
         // PUT: api/Generos/5
@@ -57,32 +62,36 @@ namespace PeliApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutGenero(int id,[FromBody] GeneroCreacionDTO generoCreacionDTO)
         {
-            var entidad = mapper.Map<Genero>(generoCreacionDTO);
-            entidad.Id = id;
-            if (id != entidad.Id)
-            {
-                return BadRequest();
-            }
 
-            _context.Entry(entidad).State = EntityState.Modified;
+            return await Put<GeneroCreacionDTO, Genero>(id, generoCreacionDTO);
 
-           // try
+
+            //var entidad = mapper.Map<Genero>(generoCreacionDTO);
+            //entidad.Id = id;
+            //if (id != entidad.Id)
             //{
-                await _context.SaveChangesAsync();
+            //    return BadRequest();
+            //}
+
+            //_context.Entry(entidad).State = EntityState.Modified;
+
+            // try
+            //{
+            //await _context.SaveChangesAsync();
             //}
             //catch (DbUpdateConcurrencyException)
             //{
-              //  if (!GeneroExists(id))
-               // {
-               //     return NotFound();
-               // }
-               // else
-               // {
-               //     throw;
-               // }
-           // }
+            //  if (!GeneroExists(id))
+            // {
+            //     return NotFound();
+            // }
+            // else
+            // {
+            //     throw;
+            // }
+            // }
 
-            return NoContent();
+            //return NoContent();
         }
 
         // POST: api/Generos
@@ -91,13 +100,16 @@ namespace PeliApi.Controllers
         [HttpPost]
         public async Task<ActionResult> PostGenero([FromBody]GeneroCreacionDTO generoCreacionDTO)
         {
-            var entidad = mapper.Map<Genero>(generoCreacionDTO);
-            _context.Generos.Add(entidad);
-            await _context.SaveChangesAsync();
 
-            var generoDTO = mapper.Map<GeneroDTO>(entidad);
+            return await Post<GeneroCreacionDTO, Genero, GeneroDTO>(generoCreacionDTO, "GetGenero");
 
-            return CreatedAtAction("GetGenero", new { id = generoDTO.Id }, generoDTO);
+            //var entidad = mapper.Map<Genero>(generoCreacionDTO);
+            //_context.Generos.Add(entidad);
+            //await _context.SaveChangesAsync();
+
+            //var generoDTO = mapper.Map<GeneroDTO>(entidad);
+
+            //return CreatedAtAction("GetGenero", new { id = generoDTO.Id }, generoDTO);
         }
 
         // DELETE: api/Generos/5
@@ -105,21 +117,18 @@ namespace PeliApi.Controllers
         public async Task<ActionResult> DeleteGenero(int id)
         {
 
-            //var genero = await _context.Generos.FindAsync(id);
-            //if (genero == null)
-            //{
-            //    return NotFound();
-            //}
-            var existe = await _context.Generos.AnyAsync(x => x.Id == id);
-			if (!existe)
-			{
-                return NotFound();
-			}
 
-            _context.Remove(new Genero() { Id=id });
-            await _context.SaveChangesAsync();
+            return await Delete<Genero>(id);
+   //         var existe = await _context.Generos.AnyAsync(x => x.Id == id);
+			//if (!existe)
+			//{
+   //             return NotFound();
+			//}
 
-            return NoContent();
+   //         _context.Remove(new Genero() { Id=id });
+   //         await _context.SaveChangesAsync();
+
+   //         return NoContent();
         }
 
         private bool GeneroExists(int id)

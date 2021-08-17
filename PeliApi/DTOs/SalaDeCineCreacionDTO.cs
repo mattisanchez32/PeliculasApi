@@ -4,14 +4,16 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PeliApi.Entidades
+namespace PeliApi.DTOs
 {
-	public class Genero: IId
+	public class SalaDeCineCreacionDTO
 	{
-		public int Id { get; set; }
 		[Required]
-		[StringLength(40)]
+		[StringLength(120)]
 		public string Nombre { get; set; }
-		public List<PeliculasGenero> PeliculasGenero { get; set; }
+		[Range(-90,90)]
+		public double Latitud { get; set; }
+		[Range(-180,180)]
+		public double Longitud { get; set; }
 	}
 }

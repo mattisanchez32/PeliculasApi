@@ -18,7 +18,7 @@ namespace PeliApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ActoresController : ControllerBase
+    public class ActoresController : CustomBaseController
     {
         private readonly AplicationDbContext _context;
 		private readonly IMapper mapper;
@@ -26,6 +26,7 @@ namespace PeliApi.Controllers
         private readonly string contenedor = "actores";
 
 		public ActoresController(AplicationDbContext context, IMapper mapper, IAlmacenadorArchivos almacenadorArchivos)
+            :base(context,mapper)
         {
             _context = context;
 			this.mapper = mapper;
@@ -36,27 +37,33 @@ namespace PeliApi.Controllers
         [HttpGet]
         public async Task<ActionResult<List<ActorDTO>>> GetActores([FromQuery] PaginacionDTO paginacionDTO)
         {
-            var queryable = _context.Actores.AsQueryable();
-            await HttpContext.InsertarParametrosPaginacion(queryable, paginacionDTO.CantidadRegistrosPorPagina);
-            //cambio _context.Acotores por queryable.Paginar para la paginacion
-            var entidades = await queryable.Paginar(paginacionDTO).ToListAsync();
-            return mapper.Map<List<ActorDTO>>(entidades);
+
+            return await Get<Actor, ActorDTO>(paginacionDTO);
+
+            //var queryable = _context.Actores.AsQueryable();
+            //await HttpContext.InsertarParametrosPaginacion(queryable, paginacionDTO.CantidadRegistrosPorPagina);
+            ////cambio _context.Acotores por queryable.Paginar para la paginacion
+            //var entidades = await queryable.Paginar(paginacionDTO).ToListAsync();
+            //return mapper.Map<List<ActorDTO>>(entidades);
         }
 
         // GET: api/Actores/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ActorDTO>> GetActor(int id)
         {
-            var actor = await _context.Actores.FindAsync(id);
 
-            if (actor == null)
-            {
-                return NotFound();
-            }
+            return await Get<Actor, ActorDTO>(id);
 
-            var dto = mapper.Map<ActorDTO>(actor);
+            //var actor = await _context.Actores.FindAsync(id);
 
-            return dto;
+            //if (actor == null)
+            //{
+            //    return NotFound();
+            //}
+
+            //var dto = mapper.Map<ActorDTO>(actor);
+
+            //return dto;
         }
 
         // PUT: api/Actores/5
@@ -151,52 +158,59 @@ namespace PeliApi.Controllers
         [HttpPatch("{id}")]
         public async Task<ActionResult> PatchActor(int id, [FromBody] JsonPatchDocument<ActorPatchDTO> patchDocument)
 		{
-            //el usuario no envio la data como debia
-            if(patchDocument == null)
-			{
-                return BadRequest();
-			}
 
-            var entidadDb = await _context.Actores.FirstOrDefaultAsync(x => x.Id == id);
 
-            if(entidadDb == null)
-			{
-                return NotFound();
-			}
+            return await Patch<Actor, ActorPatchDTO>(id, patchDocument);
 
-            var entidadDTO = mapper.Map<ActorPatchDTO>(entidadDb);
+			//el usuario no envio la data como debia
+			//         if(patchDocument == null)
+			//{
+			//             return BadRequest();
+			//}
 
-            patchDocument.ApplyTo(entidadDTO, ModelState);
+			//         var entidadDb = await _context.Actores.FirstOrDefaultAsync(x => x.Id == id);
 
-            var esValido = TryValidateModel(entidadDTO);
+			//         if(entidadDb == null)
+			//{
+			//             return NotFound();
+			//}
 
-			if (!esValido)
-			{
-                return BadRequest(ModelState);
-			}
+			//         var entidadDTO = mapper.Map<ActorPatchDTO>(entidadDb);
 
-            mapper.Map(entidadDTO, entidadDb);
+			//         patchDocument.ApplyTo(entidadDTO, ModelState);
 
-            await _context.SaveChangesAsync();
+			//         var esValido = TryValidateModel(entidadDTO);
 
-            return NoContent();
+			//if (!esValido)
+			//{
+			//             return BadRequest(ModelState);
+			//}
+
+			//         mapper.Map(entidadDTO, entidadDb);
+
+			//         await _context.SaveChangesAsync();
+
+			//         return NoContent();
 
 		}
 
-        // DELETE: api/Actores/5
-        [HttpDelete("{id}")]
+		// DELETE: api/Actores/5
+		[HttpDelete("{id}")]
         public async Task<ActionResult> DeleteActor(int id)
         {
-            var existe = await _context.Actores.AnyAsync(x => x.Id == id);
-            if (!existe)
-            {
-                return NotFound();
-            }
 
-            _context.Remove(new Actor() { Id = id });
-            await _context.SaveChangesAsync();
+            return await Delete<Actor>(id);
 
-            return NoContent();
+            //var existe = await _context.Actores.AnyAsync(x => x.Id == id);
+            //if (!existe)
+            //{
+            //    return NotFound();
+            //}
+
+            //_context.Remove(new Actor() { Id = id });
+            //await _context.SaveChangesAsync();
+
+            //return NoContent();
         }
 
         private bool ActorExists(int id)

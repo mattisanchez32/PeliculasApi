@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <ApplicationInsightsResourceId>/subscriptions/36ee6d57-7c99-4fcd-84cc-2f5667e4804c/resourcegroups/AwApiRest/providers/Microsoft.Insights/components/PeliApi</ApplicationInsightsResourceId>
+    <UserSecretsId>dab74468-c95d-460e-9073-cad489def6d1</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +15,7 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.15.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.15" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.15" />
     <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="5.0.8" />

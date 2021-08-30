@@ -57,7 +57,11 @@ namespace PeliApi
 			options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
 			sqlServerOptions => sqlServerOptions.UseNetTopologySuite()
 			));
-			services.AddControllers().AddNewtonsoftJson();
+			services.AddControllers(options =>
+			{
+				options.Filters.Add(typeof(FiltroErrores));
+			}
+				).AddNewtonsoftJson();
 
 
 			services.AddIdentity<IdentityUser, IdentityRole>()
@@ -77,6 +81,7 @@ namespace PeliApi
 					   ClockSkew = TimeSpan.Zero
 				   }
 				);
+			services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_CONNECTIONSTRING"]);
 
 
 
